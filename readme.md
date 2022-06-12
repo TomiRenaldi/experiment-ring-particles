@@ -1,4 +1,4 @@
-# Experiment Curl Darkness
+# Experiment Particles Darkness
 
 ## Setup
 Download [Node.js](https://nodejs.org/en/download/).
