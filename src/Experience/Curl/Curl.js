@@ -13,4 +13,9 @@ export default class Curl
     {
         this.particles = new Particles()
     }
+
+    update()
+    {
+        this.particles.update()
+    }
 }

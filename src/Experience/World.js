@@ -31,6 +31,8 @@ export default class World
 
     update()
     {
+        if(this.curl)
+            this.curl.update()
     }
 
     destroy()
