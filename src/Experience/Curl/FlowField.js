@@ -18,9 +18,8 @@ export default class FlowField
 
         this.setRenderTargets()
         this.setEnvironment()
-        this.setGeometry()
-        this.setMaterial()
-        this.setMesh()
+        this.setPlane()
+        this.setDebugPlane()
     }
 
     setRenderTargets()
@@ -43,35 +42,59 @@ export default class FlowField
 
         this.renderTargets.b = this.renderTargets.a.clone()
         this.renderTargets.primary = this.renderTargets.a
+        this.renderTargets.secondary = this.renderTargets.b
     }
 
     setEnvironment()
     {
         this.environment = {}
         this.environment.scene = new THREE.Scene()
-        this.environment.camera = new THREE.OrthographicCamera(-0.5, 0.5, 0.5, -0.5)
+        this.environment.camera = new THREE.OrthographicCamera(-0.5, 0.5, 0.5, -0.5, 0.1, 10)
+        this.environment.camera.position.z = 1
     }
 
-    setGeometry()
+    setPlane()
     {
-        this.geometry = new THREE.PlaneGeometry(1, 1, 1, 1)
-    }
+        this.plane = {}
+        
+        // Geometry
+        this.plane.geometry = new THREE.PlaneGeometry(1, 1, 1, 1)
 
-    setMaterial()
-    {
-        this.material = new THREE.ShaderMaterial({
+        // Material
+        this.plane.material = new THREE.ShaderMaterial({
             vertexShader: vertexShader,
             fragmentShader: fragmentShader
         })
+
+        // Mesh
+        this.plane.mesh = new THREE.Mesh(this.plane.geometry,this.plane.material)
+        this.environment.scene.add(this.plane.mesh)
     }
 
-    setMesh()
+    setDebugPlane()
     {
-        this.mesh = new THREE.Mesh(this.geometry, this.material)
-        this.environment.scene.add(this.mesh)
+        this.debugPlane = {}
+        
+        // Geometry
+        this.debugPlane.geometry = new THREE.PlaneGeometry(1, 1, 1, 1)
+
+        // Material
+        this.debugPlane.material = new THREE.MeshBasicMaterial()
+
+        // Mesh
+        this.debugPlane.mesh = new THREE.Mesh(this.debugPlane.geometry,this.debugPlane.material)
+        this.scene.add(this.debugPlane.mesh)
     }
 
     update()
     {
+        this.renderer.instance.setRenderTarget(this.renderTargets.primary)
+        this.renderer.instance.render(this.environment.scene, this.environment.camera)
+        this.renderer.instance.setRenderTarget(null)
+
+        // Swap
+        const temp = this.renderTargets.primary
+        this.renderTargets.primary = this.renderTargets.secondary
+        this.renderTargets.secondary = temp
     }
 }
