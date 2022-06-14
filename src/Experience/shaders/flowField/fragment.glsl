@@ -5,6 +5,12 @@ varying vec2 vUv;
 
 void main()
 {
-    vec4 baseColor = texture2D(uBaseTexture, vUv);
-    gl_FragColor = baseColor;
+    vec4 color = texture2D(uTexture, vUv);
+    color.a -= 0.001;
+
+    if(color.a <= 0.0)
+    {
+        color = texture2D(uBaseTexture, vUv);
+    }
+    gl_FragColor = color;
 }

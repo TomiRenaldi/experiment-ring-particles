@@ -119,6 +119,10 @@ export default class FlowField
 
     update()
     {
+        // Update plane material
+        this.plane.material.uniforms.uTexture.value = this.renderTargets.secondary.texture
+
+        // Render
         this.renderer.instance.setRenderTarget(this.renderTargets.primary)
         this.renderer.instance.render(this.environment.scene, this.environment.camera)
         this.renderer.instance.setRenderTarget(null)
