@@ -16,10 +16,36 @@ export default class FlowField
         this.width = 256
         this.height = Math.ceil(this.count / this.width)
 
+        this.setBaseTexture()
         this.setRenderTargets()
         this.setEnvironment()
         this.setPlane()
         this.setDebugPlane()
+    }
+
+    setBaseTexture()
+    {
+        this.baseTexture = {}
+
+        const size = this.width * this.height;
+        const data = new Float32Array(size * 3)
+
+        for (let i = 0; i < size; i ++) 
+        {
+	        data[i * 3 + 0] = Math.random()
+	        data[i * 3 + 1] = Math.random()
+	        data[i * 3 + 2] = Math.random()
+        }
+        this.baseTexture = new THREE.DataTexture(
+            data,
+            this.width,
+            this.height,
+            THREE.RGBAFormat,
+            THREE.FloatType
+        )
+        this.baseTexture.minFilter = THREE.NearestFilter
+        this.baseTexture.magFilter = THREE.NearestFilter
+        this.baseTexture.generateMipmaps = false
     }
 
     setRenderTargets()
@@ -62,6 +88,10 @@ export default class FlowField
 
         // Material
         this.plane.material = new THREE.ShaderMaterial({
+            uniforms: {
+                uBaseTexture: { value: null },
+                uTexture: { value: null }
+            },
             vertexShader: vertexShader,
             fragmentShader: fragmentShader
         })
@@ -76,7 +106,7 @@ export default class FlowField
         this.debugPlane = {}
         
         // Geometry
-        this.debugPlane.geometry = new THREE.PlaneGeometry(1, 1, 1, 1)
+        this.debugPlane.geometry = new THREE.PlaneGeometry(1, this.height / this.width, 1, 1)
 
         // Material
         this.debugPlane.material = new THREE.MeshBasicMaterial()
@@ -96,5 +126,8 @@ export default class FlowField
         const temp = this.renderTargets.primary
         this.renderTargets.primary = this.renderTargets.secondary
         this.renderTargets.secondary = temp
+
+        // Update debug Plane
+        this.debugPlane.material.map = this.renderTargets.secondary.texture
     }
 }
