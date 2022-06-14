@@ -11,6 +11,7 @@ export default class FlowField
         this.experience = new Experience()
         this.renderer = this.experience.renderer
         this.scene = this.experience.scene
+        this.time = this.experience.time
 
         this.count = _count
         this.width = 256
@@ -93,7 +94,8 @@ export default class FlowField
         this.plane.material = new THREE.ShaderMaterial({
             uniforms: {
                 uBaseTexture: { value: this.baseTexture },
-                uTexture: { value: this.baseTexture }
+                uTexture: { value: this.baseTexture },
+                uTime: { value: 0 }
             },
             vertexShader: vertexShader,
             fragmentShader: fragmentShader
@@ -142,6 +144,7 @@ export default class FlowField
     update()
     {
         // Update plane material
+        this.plane.material.uniforms.uTime.value = this.time.elapsed
         this.plane.material.uniforms.uTexture.value = this.renderTargets.secondary.texture
 
         // Render
