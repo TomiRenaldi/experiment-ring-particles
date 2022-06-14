@@ -39,11 +39,15 @@ export default class Particles
         
         this.geometry = new THREE.BufferGeometry()
         this.geometry.setAttribute('position', new THREE.BufferAttribute(position, 3))
+        this.geometry.setAttribute('aFboUv', this.flowField.fboUv.attribute)
     }
 
     setMaterial()
     {
         this.material = new THREE.ShaderMaterial({
+            uniforms: {
+                uFBOTexture: { value: this.flowField.texture }
+            },
             vertexShader: vertexShader,
             fragmentShader: fragmentShader
         })
@@ -58,5 +62,6 @@ export default class Particles
     update()
     {
         this.flowField.update()
+        this.material.uniforms.uFBOTexture.value = this.flowField.texture
     }
 }

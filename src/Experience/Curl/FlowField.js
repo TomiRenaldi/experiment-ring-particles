@@ -15,12 +15,14 @@ export default class FlowField
         this.count = _count
         this.width = 256
         this.height = Math.ceil(this.count / this.width)
+        this.texture = null
 
         this.setBaseTexture()
         this.setRenderTargets()
         this.setEnvironment()
         this.setPlane()
         this.setDebugPlane()
+        this.setFboUv()
     }
 
     setBaseTexture()
@@ -91,7 +93,7 @@ export default class FlowField
         this.plane.material = new THREE.ShaderMaterial({
             uniforms: {
                 uBaseTexture: { value: this.baseTexture },
-                uTexture: { value: null }
+                uTexture: { value: this.baseTexture }
             },
             vertexShader: vertexShader,
             fragmentShader: fragmentShader
@@ -117,6 +119,26 @@ export default class FlowField
         this.scene.add(this.debugPlane.mesh)
     }
 
+    setFboUv()
+    {
+        this.fboUv = {}
+        this.fboUv.data = new Float32Array(this.count * 2)
+
+        const halfExtentX = 1 / this.width / 2
+        const halfExtentY = 1 / this.height / 2
+
+        for(let i = 0; i < this.count; i++)
+        {
+            const x = (i % this.width) / this.width + halfExtentX
+            const y = Math.floor(i / this.width) / this.height + halfExtentY
+
+            this.fboUv.data[i * 2 + 0] = x
+            this.fboUv.data[i * 2 + 1] = y
+        }
+
+        this.fboUv.attribute = new THREE.BufferAttribute(this.fboUv.data, 2)
+    }
+
     update()
     {
         // Update plane material
@@ -132,7 +154,10 @@ export default class FlowField
         this.renderTargets.primary = this.renderTargets.secondary
         this.renderTargets.secondary = temp
 
+        // Update texture
+        this.texture = this.renderTargets.secondary.texture
+
         // Update debug Plane
-        this.debugPlane.material.map = this.renderTargets.secondary.texture
+        this.debugPlane.material.map = this.texture
     }
 }
