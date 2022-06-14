@@ -11,6 +11,11 @@ void main()
     if(color.a <= 0.0)
     {
         color = texture2D(uBaseTexture, vUv);
+    }else{
+        color.r += 0.01;
+        color.g += 0.02;
+        color.b += 0.03;
     }
+
     gl_FragColor = color;
 }

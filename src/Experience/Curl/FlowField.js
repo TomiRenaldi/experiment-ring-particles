@@ -35,7 +35,7 @@ export default class FlowField
 	        data[i * 4 + 0] = Math.random()
 	        data[i * 4 + 1] = Math.random()
 	        data[i * 4 + 2] = Math.random()
-	        data[i * 4 + 3] = 1.0
+	        data[i * 4 + 3] = Math.random()
         }
         this.baseTexture = new THREE.DataTexture(
             data,
@@ -110,7 +110,7 @@ export default class FlowField
         this.debugPlane.geometry = new THREE.PlaneGeometry(1, this.height / this.width, 1, 1)
 
         // Material
-        this.debugPlane.material = new THREE.MeshBasicMaterial()
+        this.debugPlane.material = new THREE.MeshBasicMaterial({ transparent: true })
 
         // Mesh
         this.debugPlane.mesh = new THREE.Mesh(this.debugPlane.geometry,this.debugPlane.material)

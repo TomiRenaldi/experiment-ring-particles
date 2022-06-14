@@ -1,8 +1,12 @@
 import * as THREE from 'three'
+
 import Experience from '../Experience.js'
 import FlowField from './FlowField.js'
 
-export default class Lines
+import vertexShader from '../shaders/particles/vertex.glsl'
+import fragmentShader from '../shaders/particles/fragment.glsl'
+
+export default class Particles
 {
     constructor()
     {
@@ -39,16 +43,16 @@ export default class Lines
 
     setMaterial()
     {
-        this.material = new THREE.PointsMaterial({
-            sizeAttenuation: true,
-            size: 0.1
+        this.material = new THREE.ShaderMaterial({
+            vertexShader: vertexShader,
+            fragmentShader: fragmentShader
         })
     }
 
     setPoints()
     {
         this.points = new THREE.Points(this.geometry, this.material)
-        // this.scene.add(this.points)
+        this.scene.add(this.points)
     }
 
     update()
