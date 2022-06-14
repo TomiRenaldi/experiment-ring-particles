@@ -28,13 +28,14 @@ export default class FlowField
         this.baseTexture = {}
 
         const size = this.width * this.height;
-        const data = new Float32Array(size * 3)
+        const data = new Float32Array(size * 4)
 
         for (let i = 0; i < size; i ++) 
         {
-	        data[i * 3 + 0] = Math.random()
-	        data[i * 3 + 1] = Math.random()
-	        data[i * 3 + 2] = Math.random()
+	        data[i * 4 + 0] = Math.random()
+	        data[i * 4 + 1] = Math.random()
+	        data[i * 4 + 2] = Math.random()
+	        data[i * 4 + 3] = 1.0
         }
         this.baseTexture = new THREE.DataTexture(
             data,
@@ -89,7 +90,7 @@ export default class FlowField
         // Material
         this.plane.material = new THREE.ShaderMaterial({
             uniforms: {
-                uBaseTexture: { value: null },
+                uBaseTexture: { value: this.baseTexture },
                 uTexture: { value: null }
             },
             vertexShader: vertexShader,
