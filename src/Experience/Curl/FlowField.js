@@ -12,11 +12,19 @@ export default class FlowField
         this.renderer = this.experience.renderer
         this.scene = this.experience.scene
         this.time = this.experience.time
+        this.debug = this.experience.debug
 
         this.count = _count
         this.width = 256
         this.height = Math.ceil(this.count / this.width)
         this.texture = null
+
+        if(this.debug)
+        {
+            this.debugFolder = this.debug.addFolder({
+                title: 'flowField'
+            })
+        }
 
         this.setBaseTexture()
         this.setRenderTargets()
@@ -93,9 +101,11 @@ export default class FlowField
         // Material
         this.plane.material = new THREE.ShaderMaterial({
             uniforms: {
+                uTime: { value: 0 },
                 uBaseTexture: { value: this.baseTexture },
                 uTexture: { value: this.baseTexture },
-                uTime: { value: 0 }
+
+                uPerlinFrequency: { value: 0.3 }
             },
             vertexShader: vertexShader,
             fragmentShader: fragmentShader
@@ -104,6 +114,16 @@ export default class FlowField
         // Mesh
         this.plane.mesh = new THREE.Mesh(this.plane.geometry,this.plane.material)
         this.environment.scene.add(this.plane.mesh)
+
+        if(this.debug)
+        {
+            this.debugFolder
+            .addInput(
+                this.plane.material.uniforms.uPerlinFrequency,
+                'value',
+                { label: 'uPerlinFrequency', min: 0, max: 5, step: 0.001 }
+            )
+        }
     }
 
     setDebugPlane()
