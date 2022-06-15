@@ -3,6 +3,8 @@ uniform sampler2D uBaseTexture;
 uniform sampler2D uTexture;
 
 uniform float uPerlinFrequency;
+uniform float uPerlinMultiplier;
+uniform float uTimeFrequency;
 
 varying vec2 vUv;
 
@@ -21,11 +23,11 @@ void main()
     {
         vec4 baseColor = color;
 
-        float time = uTime * 0.001;
+        float time = uTime * uTimeFrequency;
 
-        color.r += perlin3d(vec3(baseColor.gb * uPerlinFrequency           , time)) * 0.01;
-        color.g += perlin3d(vec3(baseColor.rb * uPerlinFrequency + 123.45  , time)) * 0.01;
-        color.b += perlin3d(vec3(baseColor.rg * uPerlinFrequency + 12345.67, time)) * 0.01;
+        color.r += perlin3d(vec3(baseColor.gb * uPerlinFrequency           , time)) * uPerlinMultiplier;
+        color.g += perlin3d(vec3(baseColor.rb * uPerlinFrequency + 123.45  , time)) * uPerlinMultiplier;
+        color.b += perlin3d(vec3(baseColor.rg * uPerlinFrequency + 12345.67, time)) * uPerlinMultiplier;
     }
 
     gl_FragColor = color;

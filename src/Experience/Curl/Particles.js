@@ -12,11 +12,21 @@ export default class Particles
     {
         this.experience = new Experience()
         this.scene = this.experience.scene
+        this.debug = this.experience.debug
+        this.resources = this.experience.resources
 
         this.count = 10000
 
+        if(this.debug)
+        {
+            this.debugFolder = this.debug.addFolder({
+                title: 'particles'
+            })
+        }
+
         this.setFlowfield()
         this.setGeometry()
+        this.setColor()
         this.setMaterial()
         this.setPoints()
     }
@@ -42,15 +52,49 @@ export default class Particles
         this.geometry.setAttribute('aFboUv', this.flowField.fboUv.attribute)
     }
 
+    setColor()
+    {
+        this.color = {}
+
+        this.color.value = '#ff0000'
+        this.color.instance = new THREE.Color(this.color.value)
+    }
+
     setMaterial()
     {
         this.material = new THREE.ShaderMaterial({
             uniforms: {
-                uFBOTexture: { value: this.flowField.texture }
+                uMaskTexture: { value: this.resources.items.particleMask },
+                uFBOTexture: { value: this.flowField.texture },
+                uColor: { value: this.color.instance },
+                uSize: { value: 28 }
             },
             vertexShader: vertexShader,
             fragmentShader: fragmentShader
         })
+
+        if(this.debug)
+        {
+            this.debugFolder
+            .addInput(
+                this.color,
+                'value',
+                { view: 'color'}
+            )
+            .on('change', () => {
+                this.color.instance.set(this.color.value)
+            })
+
+            this.debugFolder
+            .addInput(
+                this.material.uniforms.uSize,
+                'value',
+                { label: 'uSize', min: 1, max: 100, step: 1 }
+            )
+            .on('change', () => {
+                this.color.instance.set(this.color.value)
+            })
+        }
     }
 
     setPoints()

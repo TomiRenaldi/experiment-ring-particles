@@ -105,7 +105,9 @@ export default class FlowField
                 uBaseTexture: { value: this.baseTexture },
                 uTexture: { value: this.baseTexture },
 
-                uPerlinFrequency: { value: 0.3 }
+                uPerlinFrequency: { value: 0.3 },
+                uPerlinMultiplier: { value: 0.01 },
+                uTimeFrequency: { value: 0.001 }
             },
             vertexShader: vertexShader,
             fragmentShader: fragmentShader
@@ -121,7 +123,21 @@ export default class FlowField
             .addInput(
                 this.plane.material.uniforms.uPerlinFrequency,
                 'value',
-                { label: 'uPerlinFrequency', min: 0, max: 5, step: 0.001 }
+                { label: 'uPerlinFrequency', min: 0, max: 1, step: 0.001 }
+            )
+
+            this.debugFolder
+            .addInput(
+                this.plane.material.uniforms.uPerlinMultiplier,
+                'value',
+                { label: 'uPerlinMultiplier', min: 0, max: 0.1, step: 0.001 }
+            )
+
+            this.debugFolder
+            .addInput(
+                this.plane.material.uniforms.uTimeFrequency,
+                'value',
+                { label: 'uTimeFrequency', min: 0, max: 0.005, step: 0.0001 }
             )
         }
     }
