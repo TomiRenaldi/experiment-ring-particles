@@ -4,7 +4,7 @@ export default [
         data: {},
         items:
         [
-            { name: 'particleMask', source: '/assets/particleMask.png', type: 'texture' },
+            { name: 'particleMaskTexture', source: '/assets/particleMask.png', type: 'texture' }
         ]
     }
 ]

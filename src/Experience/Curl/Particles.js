@@ -15,7 +15,7 @@ export default class Particles
         this.debug = this.experience.debug
         this.resources = this.experience.resources
 
-        this.count = 10000
+        this.count = 1000
 
         if(this.debug)
         {
@@ -63,11 +63,14 @@ export default class Particles
     setMaterial()
     {
         this.material = new THREE.ShaderMaterial({
+            transparent: true,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending,
             uniforms: {
-                uMaskTexture: { value: this.resources.items.particleMask },
-                uFBOTexture: { value: this.flowField.texture },
                 uColor: { value: this.color.instance },
-                uSize: { value: 28 }
+                uSize: { value: 20 },
+                uMaskTexture: { value: this.resources.items.particleMaskTexture },
+                uFBOTexture: { value: this.flowField.texture }
             },
             vertexShader: vertexShader,
             fragmentShader: fragmentShader

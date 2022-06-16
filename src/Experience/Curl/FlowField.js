@@ -32,6 +32,8 @@ export default class FlowField
         this.setPlane()
         this.setDebugPlane()
         this.setFboUv()
+
+        this.render()
     }
 
     setBaseTexture()
@@ -43,9 +45,9 @@ export default class FlowField
 
         for (let i = 0; i < size; i ++) 
         {
-	        data[i * 4 + 0] = Math.random()
-	        data[i * 4 + 1] = Math.random()
-	        data[i * 4 + 2] = Math.random()
+	        data[i * 4 + 0] = (Math.random() - 0.5) * 1
+	        data[i * 4 + 1] = (Math.random() - 0.5) * 1
+	        data[i * 4 + 2] = (Math.random() - 0.5) * 1
 	        data[i * 4 + 3] = Math.random()
         }
         this.baseTexture = new THREE.DataTexture(
@@ -102,12 +104,16 @@ export default class FlowField
         this.plane.material = new THREE.ShaderMaterial({
             uniforms: {
                 uTime: { value: 0 },
+                uDelta: { value: 16 },
+
                 uBaseTexture: { value: this.baseTexture },
                 uTexture: { value: this.baseTexture },
+                
+                uDecaySpeed: { value: 0.00141 },
 
-                uPerlinFrequency: { value: 0.3 },
-                uPerlinMultiplier: { value: 0.01 },
-                uTimeFrequency: { value: 0.001 }
+                uPerlinFrequency: { value: 0.630 },
+                uPerlinMultiplier: { value: 0.014 },
+                uTimeFrequency: { value: 0.0004 }
             },
             vertexShader: vertexShader,
             fragmentShader: fragmentShader
@@ -119,6 +125,13 @@ export default class FlowField
 
         if(this.debug)
         {
+            this.debugFolder
+            .addInput(
+                this.plane.material.uniforms.uDecaySpeed,
+                'value',
+                { label: 'uDecaySpeed', min: 0, max: 0.005, step: 0.00001 }
+            )
+
             this.debugFolder
             .addInput(
                 this.plane.material.uniforms.uPerlinFrequency,
@@ -154,7 +167,18 @@ export default class FlowField
 
         // Mesh
         this.debugPlane.mesh = new THREE.Mesh(this.debugPlane.geometry,this.debugPlane.material)
+        this.debugPlane.mesh.visible = false
         this.scene.add(this.debugPlane.mesh)
+
+        if(this.debug)
+        {
+            this.debugFolder
+            .addInput(
+                this.debugPlane.mesh,
+                'visible',
+                { label: 'debugPlaneVisible' }
+            )
+        }
     }
 
     setFboUv()
@@ -177,13 +201,9 @@ export default class FlowField
         this.fboUv.attribute = new THREE.BufferAttribute(this.fboUv.data, 2)
     }
 
-    update()
+    render()
     {
-        // Update plane material
-        this.plane.material.uniforms.uTime.value = this.time.elapsed
-        this.plane.material.uniforms.uTexture.value = this.renderTargets.secondary.texture
-
-        // Render
+         // Render
         this.renderer.instance.setRenderTarget(this.renderTargets.primary)
         this.renderer.instance.render(this.environment.scene, this.environment.camera)
         this.renderer.instance.setRenderTarget(null)
@@ -198,5 +218,15 @@ export default class FlowField
 
         // Update debug Plane
         this.debugPlane.material.map = this.texture
+    }
+
+    update()
+    {
+        // Update plane material
+        this.plane.material.uniforms.uDelta.value = this.time.delta
+        this.plane.material.uniforms.uTime.value = this.time.elapsed
+        this.plane.material.uniforms.uTexture.value = this.renderTargets.secondary.texture
+
+        this.render()
     }
 }

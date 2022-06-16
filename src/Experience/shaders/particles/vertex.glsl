@@ -1,4 +1,5 @@
 uniform sampler2D uFBOTexture;
+uniform sampler2D uMaskTexture;
 uniform float uSize;
 
 attribute vec2 aFboUv;
@@ -11,6 +12,9 @@ void main()
     vec4 viewPosition = viewMatrix * modelPosition;
     gl_Position = projectionMatrix * viewPosition;
 
-    gl_PointSize = uSize;
+    float lifeSize = min((1.0 - fboColor.a) * 10.0, fboColor.a * 2.0);
+    lifeSize = clamp(lifeSize, 0.0, 1.0);
+
+    gl_PointSize = uSize * lifeSize;
     gl_PointSize *= (1.0 / - viewPosition.z);
 }
