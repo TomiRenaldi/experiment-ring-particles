@@ -6,7 +6,7 @@ import fragmentShader from '../shaders/flowField/fragment.glsl'
 
 export default class FlowField
 {
-    constructor(_count)
+    constructor(_positions)
     {
         this.experience = new Experience()
         this.renderer = this.experience.renderer
@@ -14,8 +14,9 @@ export default class FlowField
         this.time = this.experience.time
         this.debug = this.experience.debug
 
-        this.count = _count
-        this.width = 256
+        this.positions = _positions
+        this.count = this.positions.length / 3
+        this.width = 4096
         this.height = Math.ceil(this.count / this.width)
         this.texture = null
 
@@ -45,9 +46,9 @@ export default class FlowField
 
         for (let i = 0; i < size; i ++) 
         {
-	        data[i * 4 + 0] = (Math.random() - 0.5) * 1
-	        data[i * 4 + 1] = (Math.random() - 0.5) * 1
-	        data[i * 4 + 2] = (Math.random() - 0.5) * 1
+	        data[i * 4 + 0] = this.positions[i * 3 + 0]
+	        data[i * 4 + 1] = this.positions[i * 3 + 1]
+	        data[i * 4 + 2] = this.positions[i * 3 + 2]
 	        data[i * 4 + 3] = Math.random()
         }
         this.baseTexture = new THREE.DataTexture(

@@ -24,6 +24,7 @@ export default class Particles
             })
         }
 
+        this.setPositions()
         this.setFlowfield()
         this.setGeometry()
         this.setColor()
@@ -31,24 +32,27 @@ export default class Particles
         this.setPoints()
     }
 
-    setFlowfield()
+    setPositions()
     {
-        this.flowField = new FlowField(this.count)
-    }
-
-    setGeometry()
-    {
-        const position = new Float32Array(this.count * 3)
+        this.positions = new Float32Array(this.count * 3)
 
         for(let i = 0; i < this.count; i++)
         {
-            position[i * 3 + 0] = (Math.random() - 0.5) * 2
-            position[i * 3 + 1] = (Math.random() - 0.5) * 2
-            position[i * 3 + 2] = (Math.random() - 0.5) * 2
+             this.positions[i * 3 + 0] = (Math.random() - 0.5) * 2
+             this.positions[i * 3 + 1] = (Math.random() - 0.5) * 2
+             this.positions[i * 3 + 2] = (Math.random() - 0.5) * 2
         }
-        
+    }
+
+    setFlowfield()
+    {
+        this.flowField = new FlowField(this.positions)
+    }
+
+    setGeometry()
+    {   
         this.geometry = new THREE.BufferGeometry()
-        this.geometry.setAttribute('position', new THREE.BufferAttribute(position, 3))
+        this.geometry.setAttribute('position', new THREE.BufferAttribute(this.positions, 3))
         this.geometry.setAttribute('aFboUv', this.flowField.fboUv.attribute)
     }
 
@@ -56,7 +60,7 @@ export default class Particles
     {
         this.color = {}
 
-        this.color.value = '#ff0000'
+        this.color.value = '#191919'
         this.color.instance = new THREE.Color(this.color.value)
     }
 
@@ -68,7 +72,7 @@ export default class Particles
             blending: THREE.AdditiveBlending,
             uniforms: {
                 uColor: { value: this.color.instance },
-                uSize: { value: 20 },
+                uSize: { value: 70 },
                 uMaskTexture: { value: this.resources.items.particleMaskTexture },
                 uFBOTexture: { value: this.flowField.texture }
             },
