@@ -1,4 +1,4 @@
-# Experiment Particles Darkness
+# Experiment Ring Particles
 
 ## Setup
 Download [Node.js](https://nodejs.org/en/download/).

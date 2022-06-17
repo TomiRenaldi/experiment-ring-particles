@@ -6,10 +6,8 @@ import FlowField from './FlowField.js'
 import vertexShader from '../shaders/particles/vertex.glsl'
 import fragmentShader from '../shaders/particles/fragment.glsl'
 
-export default class Particles
-{
-    constructor()
-    {
+export default class Particles {
+    constructor () {
         this.experience = new Experience()
         this.scene = this.experience.scene
         this.debug = this.experience.debug
@@ -17,8 +15,7 @@ export default class Particles
 
         this.count = 1000
 
-        if(this.debug)
-        {
+        if (this.debug) {
             this.debugFolder = this.debug.addFolder({
                 title: 'particles'
             })
@@ -32,40 +29,35 @@ export default class Particles
         this.setPoints()
     }
 
-    setPositions()
-    {
+    setPositions() {
         this.positions = new Float32Array(this.count * 3)
 
-        for(let i = 0; i < this.count; i++)
-        {
-             this.positions[i * 3 + 0] = (Math.random() - 0.5) * 2
-             this.positions[i * 3 + 1] = (Math.random() - 0.5) * 2
-             this.positions[i * 3 + 2] = (Math.random() - 0.5) * 2
+        for (let i = 0; i < this.count; i++) {
+            const angle = Math.random() * Math.PI * 2
+            this.positions[i * 3 + 0] = Math.sin(angle)
+            this.positions[i * 3 + 1] = Math.cos(angle)
+            this.positions[i * 3 + 2] = 0
         }
     }
 
-    setFlowfield()
-    {
+    setFlowfield() {
         this.flowField = new FlowField(this.positions)
     }
 
-    setGeometry()
-    {   
+    setGeometry() {
         this.geometry = new THREE.BufferGeometry()
         this.geometry.setAttribute('position', new THREE.BufferAttribute(this.positions, 3))
         this.geometry.setAttribute('aFboUv', this.flowField.fboUv.attribute)
     }
 
-    setColor()
-    {
+    setColor() {
         this.color = {}
 
         this.color.value = '#191919'
         this.color.instance = new THREE.Color(this.color.value)
     }
 
-    setMaterial()
-    {
+    setMaterial() {
         this.material = new THREE.ShaderMaterial({
             transparent: true,
             depthWrite: false,
@@ -80,38 +72,35 @@ export default class Particles
             fragmentShader: fragmentShader
         })
 
-        if(this.debug)
-        {
+        if (this.debug) {
             this.debugFolder
-            .addInput(
-                this.color,
-                'value',
-                { view: 'color'}
-            )
-            .on('change', () => {
-                this.color.instance.set(this.color.value)
-            })
+                .addInput(
+                    this.color,
+                    'value',
+                    { view: 'color' }
+                )
+                .on('change', () => {
+                    this.color.instance.set(this.color.value)
+                })
 
             this.debugFolder
-            .addInput(
-                this.material.uniforms.uSize,
-                'value',
-                { label: 'uSize', min: 1, max: 100, step: 1 }
-            )
-            .on('change', () => {
-                this.color.instance.set(this.color.value)
-            })
+                .addInput(
+                    this.material.uniforms.uSize,
+                    'value',
+                    { label: 'uSize', min: 1, max: 100, step: 1 }
+                )
+                .on('change', () => {
+                    this.color.instance.set(this.color.value)
+                })
         }
     }
 
-    setPoints()
-    {
+    setPoints() {
         this.points = new THREE.Points(this.geometry, this.material)
         this.scene.add(this.points)
     }
 
-    update()
-    {
+    update() {
         this.flowField.update()
         this.material.uniforms.uFBOTexture.value = this.flowField.texture
     }

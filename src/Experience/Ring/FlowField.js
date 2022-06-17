@@ -4,10 +4,8 @@ import Experience from '../Experience.js'
 import vertexShader from '../shaders/flowField/vertex.glsl'
 import fragmentShader from '../shaders/flowField/fragment.glsl'
 
-export default class FlowField
-{
-    constructor(_positions)
-    {
+export default class FlowField {
+    constructor (_positions) {
         this.experience = new Experience()
         this.renderer = this.experience.renderer
         this.scene = this.experience.scene
@@ -16,12 +14,11 @@ export default class FlowField
 
         this.positions = _positions
         this.count = this.positions.length / 3
-        this.width = 4096
-        this.height = Math.ceil(this.count / this.width)
+        this.width = 640
+        this.height = 427
         this.texture = null
 
-        if(this.debug)
-        {
+        if (this.debug) {
             this.debugFolder = this.debug.addFolder({
                 title: 'flowField'
             })
@@ -37,19 +34,17 @@ export default class FlowField
         this.render()
     }
 
-    setBaseTexture()
-    {
+    setBaseTexture() {
         this.baseTexture = {}
 
         const size = this.width * this.height;
         const data = new Float32Array(size * 4)
 
-        for (let i = 0; i < size; i ++) 
-        {
-	        data[i * 4 + 0] = this.positions[i * 3 + 0]
-	        data[i * 4 + 1] = this.positions[i * 3 + 1]
-	        data[i * 4 + 2] = this.positions[i * 3 + 2]
-	        data[i * 4 + 3] = Math.random()
+        for (let i = 0; i < size; i++) {
+            data[i * 4 + 0] = this.positions[i * 3 + 0]
+            data[i * 4 + 1] = this.positions[i * 3 + 1]
+            data[i * 4 + 2] = this.positions[i * 3 + 2]
+            data[i * 4 + 3] = Math.random()
         }
         this.baseTexture = new THREE.DataTexture(
             data,
@@ -63,11 +58,10 @@ export default class FlowField
         this.baseTexture.generateMipmaps = false
     }
 
-    setRenderTargets()
-    {
+    setRenderTargets() {
         this.renderTargets = {}
         this.renderTargets.a = new THREE.WebGLRenderTarget(
-            this.width, 
+            this.width,
             this.height,
             {
                 magFilter: THREE.NearestFilter,
@@ -77,7 +71,7 @@ export default class FlowField
                 type: THREE.FloatType,
                 encoding: THREE.LinearEncoding,
                 depthBuffer: false,
-                stencilBuffer: false 
+                stencilBuffer: false
             }
         )
 
@@ -86,18 +80,16 @@ export default class FlowField
         this.renderTargets.secondary = this.renderTargets.b
     }
 
-    setEnvironment()
-    {
+    setEnvironment() {
         this.environment = {}
         this.environment.scene = new THREE.Scene()
         this.environment.camera = new THREE.OrthographicCamera(-0.5, 0.5, 0.5, -0.5, 0.1, 10)
         this.environment.camera.position.z = 1
     }
 
-    setPlane()
-    {
+    setPlane() {
         this.plane = {}
-        
+
         // Geometry
         this.plane.geometry = new THREE.PlaneGeometry(1, 1, 1, 1)
 
@@ -109,11 +101,11 @@ export default class FlowField
 
                 uBaseTexture: { value: this.baseTexture },
                 uTexture: { value: this.baseTexture },
-                
-                uDecaySpeed: { value: 0.00141 },
 
-                uPerlinFrequency: { value: 0.630 },
-                uPerlinMultiplier: { value: 0.014 },
+                uDecaySpeed: { value: 0.00049 },
+
+                uPerlinFrequency: { value: 4 },
+                uPerlinMultiplier: { value: 0.004 },
                 uTimeFrequency: { value: 0.0004 }
             },
             vertexShader: vertexShader,
@@ -121,45 +113,43 @@ export default class FlowField
         })
 
         // Mesh
-        this.plane.mesh = new THREE.Mesh(this.plane.geometry,this.plane.material)
+        this.plane.mesh = new THREE.Mesh(this.plane.geometry, this.plane.material)
         this.environment.scene.add(this.plane.mesh)
 
-        if(this.debug)
-        {
+        if (this.debug) {
             this.debugFolder
-            .addInput(
-                this.plane.material.uniforms.uDecaySpeed,
-                'value',
-                { label: 'uDecaySpeed', min: 0, max: 0.005, step: 0.00001 }
-            )
+                .addInput(
+                    this.plane.material.uniforms.uDecaySpeed,
+                    'value',
+                    { label: 'uDecaySpeed', min: 0, max: 0.005, step: 0.00001 }
+                )
 
             this.debugFolder
-            .addInput(
-                this.plane.material.uniforms.uPerlinFrequency,
-                'value',
-                { label: 'uPerlinFrequency', min: 0, max: 1, step: 0.001 }
-            )
+                .addInput(
+                    this.plane.material.uniforms.uPerlinFrequency,
+                    'value',
+                    { label: 'uPerlinFrequency', min: 0, max: 1, step: 0.001 }
+                )
 
             this.debugFolder
-            .addInput(
-                this.plane.material.uniforms.uPerlinMultiplier,
-                'value',
-                { label: 'uPerlinMultiplier', min: 0, max: 0.1, step: 0.001 }
-            )
+                .addInput(
+                    this.plane.material.uniforms.uPerlinMultiplier,
+                    'value',
+                    { label: 'uPerlinMultiplier', min: 0, max: 0.1, step: 0.001 }
+                )
 
             this.debugFolder
-            .addInput(
-                this.plane.material.uniforms.uTimeFrequency,
-                'value',
-                { label: 'uTimeFrequency', min: 0, max: 0.005, step: 0.0001 }
-            )
+                .addInput(
+                    this.plane.material.uniforms.uTimeFrequency,
+                    'value',
+                    { label: 'uTimeFrequency', min: 0, max: 0.005, step: 0.0001 }
+                )
         }
     }
 
-    setDebugPlane()
-    {
+    setDebugPlane() {
         this.debugPlane = {}
-        
+
         // Geometry
         this.debugPlane.geometry = new THREE.PlaneGeometry(1, this.height / this.width, 1, 1)
 
@@ -167,31 +157,28 @@ export default class FlowField
         this.debugPlane.material = new THREE.MeshBasicMaterial({ transparent: true })
 
         // Mesh
-        this.debugPlane.mesh = new THREE.Mesh(this.debugPlane.geometry,this.debugPlane.material)
+        this.debugPlane.mesh = new THREE.Mesh(this.debugPlane.geometry, this.debugPlane.material)
         this.debugPlane.mesh.visible = false
         this.scene.add(this.debugPlane.mesh)
 
-        if(this.debug)
-        {
+        if (this.debug) {
             this.debugFolder
-            .addInput(
-                this.debugPlane.mesh,
-                'visible',
-                { label: 'debugPlaneVisible' }
-            )
+                .addInput(
+                    this.debugPlane.mesh,
+                    'visible',
+                    { label: 'debugPlaneVisible' }
+                )
         }
     }
 
-    setFboUv()
-    {
+    setFboUv() {
         this.fboUv = {}
         this.fboUv.data = new Float32Array(this.count * 2)
 
         const halfExtentX = 1 / this.width / 2
         const halfExtentY = 1 / this.height / 2
 
-        for(let i = 0; i < this.count; i++)
-        {
+        for (let i = 0; i < this.count; i++) {
             const x = (i % this.width) / this.width + halfExtentX
             const y = Math.floor(i / this.width) / this.height + halfExtentY
 
@@ -202,9 +189,8 @@ export default class FlowField
         this.fboUv.attribute = new THREE.BufferAttribute(this.fboUv.data, 2)
     }
 
-    render()
-    {
-         // Render
+    render() {
+        // Render
         this.renderer.instance.setRenderTarget(this.renderTargets.primary)
         this.renderer.instance.render(this.environment.scene, this.environment.camera)
         this.renderer.instance.setRenderTarget(null)
@@ -221,8 +207,7 @@ export default class FlowField
         this.debugPlane.material.map = this.texture
     }
 
-    update()
-    {
+    update() {
         // Update plane material
         this.plane.material.uniforms.uDelta.value = this.time.delta
         this.plane.material.uniforms.uTime.value = this.time.elapsed
